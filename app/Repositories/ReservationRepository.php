@@ -4,6 +4,8 @@ namespace App\Repositories;
 
 use App\Enums\ReservationStatusEnum;
 use App\Models\Reservation;
+use App\Models\Room;
+use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -55,5 +57,13 @@ class ReservationRepository
                     });
             })
             ->exists();
+    }
+
+    public function getTotalPrice(string $checkIn,string $checkOut ,Room $room): int
+    {
+        $nights = Carbon::parse($checkIn)
+            ->diffInDays(Carbon::parse($checkOut));
+
+       return $room->price_per_night * $nights;
     }
 }
