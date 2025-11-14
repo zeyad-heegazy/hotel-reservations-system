@@ -13,8 +13,8 @@ return new class extends Migration {
     {
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('room_id');
-            $table->unsignedInteger('guest_id');
+            $table->unsignedBigInteger('room_id');
+            $table->unsignedBigInteger('guest_id');
             $table->date('check_in');
             $table->date('check_out');
             $table->enum(

@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('hotel_id');
+            $table->unsignedBigInteger('hotel_id');
             $table->string('number');
             $table->enum('type', array_column(RoomTypeEnum::cases(), 'value'));
             $table->decimal('price_per_night', 8, 2);
