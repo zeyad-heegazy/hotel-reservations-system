@@ -9,6 +9,10 @@
             <form method="POST">
                 @csrf
 
+                @error('email')
+                <div class="alert alert-danger">{{ $message }}</div>
+                @enderror
+
                 <div class="mb-3">
                     <label>Email</label>
                     <input class="form-control" name="email">

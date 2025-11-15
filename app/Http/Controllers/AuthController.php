@@ -27,31 +27,54 @@ class AuthController extends Controller
             "password" => "required"
         ]);
 
-        if (Auth::attempt($credentials)) {
-            return redirect('/dashboard');
+        if (!Auth::attempt($credentials)) {
+            return back()->withErrors(["email" => "Invalid credentials"])
+                ->withInput();
         }
 
-        return back()->withErrors(["email" => "Invalid credentials"]);
+        $request->session()->regenerate();
+
+        $token = Auth::user()->createToken('web_token')->plainTextToken;
+
+        session(['api_token' => $token]);
+
+        return redirect('/dashboard');
     }
 
+    /**
+     * Handle registration
+     */
     public function register(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            "name" => "required",
-            "email" => "required|email|unique:users",
+            "name" => "required|string|max:255",
+            "email" => "required|email|unique:users,email",
             "password" => "required|min:6"
         ]);
 
-        $data['password'] = bcrypt($data['password']);
+        $user = User::create([
+            "name"     => $data["name"],
+            "email"    => $data["email"],
+            "password" => bcrypt($data["password"]),
+        ]);
 
-        User::create($data);
-
-        return redirect('/login')->with("success", "Registered successfully. Please log in.");
+        return redirect('/login')->with("success", "Registered successfully! Please log in.");
     }
 
-    public function logout(): RedirectResponse
+    /**
+     * Logout user
+     */
+    public function logout(Request $request): RedirectResponse
     {
+        if ($request->user()) {
+            $request->user()->tokens()->delete();
+        }
+
         Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect('/login');
     }
 }
