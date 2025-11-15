@@ -92,7 +92,6 @@ Each module has its own CRUD Blade view folder:
 
 A reusable trait automatically logs:
 
-- The user performing the action
 - The model affected
 - Old and new payload values
 - Timestamp
@@ -186,6 +185,10 @@ Seeders create:
 - Sample rooms
 - Sample guests
 - One admin account
+```bash
+email: admin@admin.com
+password: admin 
+```
 
 This makes testing easier and ensures the system works immediately after installation.
 
