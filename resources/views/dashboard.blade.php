@@ -66,10 +66,11 @@
     <h4>Quick Management</h4>
 
     <div class="list-group mt-3">
-        <a href="/hotels" class="list-group-item list-group-item-action">Manage Hotels</a>
-        <a href="/rooms" class="list-group-item list-group-item-action">Manage Rooms</a>
-        <a href="/guests" class="list-group-item list-group-item-action">Manage Guests</a>
-        <a href="/reservations" class="list-group-item list-group-item-action">Manage Reservations</a>
+        <a href="{{route('hotels.index')}}" class="list-group-item list-group-item-action">Manage Hotels</a>
+        <a href="{{route('rooms.index')}}" class="list-group-item list-group-item-action">Manage Rooms</a>
+        <a href="{{route('guests.index')}}" class="list-group-item list-group-item-action">Manage Guests</a>
+        <a href="{{route('reservations.index')}}" class="list-group-item list-group-item-action">Manage Reservations</a>
+        <a href="{{ route('logs.index') }}" class="list-group-item list-group-item-action">Logs</a>
     </div>
 
 @endsection

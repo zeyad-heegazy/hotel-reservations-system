@@ -9,6 +9,7 @@ require __DIR__ . '/auth.php';
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
+    require __DIR__.'/logs.php';
     require __DIR__ . '/hotels.php';
     require __DIR__ . '/rooms.php';
     require __DIR__ . '/guests.php';

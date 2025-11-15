@@ -3,6 +3,7 @@
 namespace App\Logging;
 
 use App\Models\ActivityLog;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class ActivityLogger
@@ -21,8 +22,8 @@ class ActivityLogger
         ]);
     }
 
-    public function getAllLogs(int $perPage = 10): LengthAwarePaginator
+    public function getAllLogs(): Collection
     {
-        return ActivityLog::orderBy('created_at', 'desc')->paginate($perPage);
+        return ActivityLog::all()->sortByDesc('created_at');
     }
 }
