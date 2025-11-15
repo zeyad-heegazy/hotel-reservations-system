@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\SendReservationConfirmationEmailJob;
 use App\Models\Reservation;
 use App\Repositories\ReservationRepository;
 use App\Repositories\RoomRepository;
@@ -35,16 +36,18 @@ class ReservationService
             $data['check_out']
         );
 
-        if (!$available) {
-            throw new \Exception('Room is not available for these dates.');
-        }
-
+       abort_if(!$available, 404, 'Room is not available for these dates.');
 
         $room = $this->roomRepository->getById($data['room_id']);
 
         $data['total_price'] = $this->repository->getTotalPrice($data['check_in'], $data['check_out'], $room);
 
-        return $this->repository->create($data);
+        $reservation = $this->repository->create($data);
+
+        SendReservationConfirmationEmailJob::dispatch($reservation)
+            ->delay(now()->addSeconds(10));
+
+        return $reservation;
     }
 
     public function cancel(int $reservationId): Reservation
