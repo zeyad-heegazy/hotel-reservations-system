@@ -66,7 +66,7 @@ This pattern is common in enterprise Laravel applications and prevents fat contr
 
 ## 2. Form Request Validation
 
-Each action (store, update, delete, view) has its own **Form Request** class, ensuring:
+Each action (store, update, delete, view) has its own **Form Request** class extended from **BaseRequest** class, ensuring:
 
 - Clean controllers
 - Consistent validation
