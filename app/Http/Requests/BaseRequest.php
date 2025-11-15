@@ -11,6 +11,12 @@ abstract class BaseRequest extends FormRequest
         return true;
     }
 
+
+    public function sanitized(): array
+    {
+        return $this->validated();
+    }
+
     protected function prepareForValidation(): void
     {
         $cleaned = array_map(function ($value) {

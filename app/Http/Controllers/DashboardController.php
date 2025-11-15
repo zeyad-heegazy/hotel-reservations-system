@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DashboardRequest;
 use App\Models\Guest;
 use App\Models\Hotel;
 use App\Models\Reservation;
@@ -11,7 +12,7 @@ use Illuminate\View\View;
 
 class DashboardController
 {
-   public function index(): View
+   public function index(DashboardRequest $request): View
    {
        $hotelsCount = Hotel::count();
        $guestsCount = Guest::count();
