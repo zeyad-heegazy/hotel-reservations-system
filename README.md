@@ -2,7 +2,7 @@
 
 ## 1. Clone the repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/hotel-reservation.git
+git clone https://github.com/zeyad-heegazy/hotel-reservations-system.git
 cd hotel-reservation
 ```
 
