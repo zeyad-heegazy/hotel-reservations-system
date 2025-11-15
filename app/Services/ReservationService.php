@@ -51,4 +51,8 @@ class ReservationService
     {
         return $this->repository->cancel($reservationId);
     }
+    public function delete(int $reservationId): bool
+    {
+        return $this->repository->delete($reservationId);
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Hotel;
 use App\Repositories\HotelRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 class HotelService
 {
@@ -15,6 +16,10 @@ class HotelService
     public function getAllPaginated(int $perPage = 10): LengthAwarePaginator
     {
         return $this->repository->getAllPaginated($perPage);
+    }
+    public function getAll(): Collection
+    {
+        return $this->repository->getAll();
     }
 
     public function getById(int $id): Hotel

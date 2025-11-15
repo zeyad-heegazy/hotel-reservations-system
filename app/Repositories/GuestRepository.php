@@ -18,7 +18,7 @@ class GuestRepository
     }
     public function getById(int $guestId): Guest
     {
-        return Guest::findOrFail($guestId);
+        return Guest::withCount('reservations')->findOrFail($guestId);
     }
     public function create(array $data): Guest
     {

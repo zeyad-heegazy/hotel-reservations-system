@@ -26,6 +26,13 @@ abstract class BaseRequest extends FormRequest
         $this->merge($cleaned);
     }
 
+    public function validationData(): array
+    {
+        return array_merge($this->all(), [
+            'id' => $this->route('id'),
+        ]);
+    }
+
     public function rules(): array
     {
         return [];

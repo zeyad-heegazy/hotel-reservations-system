@@ -66,4 +66,9 @@ class ReservationRepository
 
        return $room->price_per_night * $nights;
     }
+
+    public function delete(int $reservationId): bool
+    {
+        return Reservation::findOrFail($reservationId)->delete();
+    }
 }
