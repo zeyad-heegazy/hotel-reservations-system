@@ -1,59 +1,191 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# How to Set Up and Run the Project
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 1. Clone the repository
+```bash
+git clone https://github.com/YOUR_USERNAME/hotel-reservation.git
+cd hotel-reservation
+```
 
-## About Laravel
+## 2. Install backend and frontend dependencies
+```bash
+composer install
+npm install
+npm run build
+```
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 3. Create and configure the environment
+```bash
+cp .env.example .env
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Update database and mail credentials according to your environment.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 4. Generate application key
+```bash
+php artisan key:generate
+```
 
-## Learning Laravel
+## 5. Run migrations and seeders
+```bash
+php artisan migrate --seed
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+This seeds sample hotels, rooms, guests, and a test admin account.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 6. Run the development server
+```bash
+php artisan serve
+```
 
-## Laravel Sponsors
+Visit the system at:
+```
+http://localhost:8000
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 7. Start the queue worker for reservation emails
+```bash
+php artisan queue:work
+```
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# Design and Architectural Choices
 
-## Contributing
+## 1. Service–Repository Architecture
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Business logic is separated from data access using **Service** and **Repository** classes for each entity (Hotels, Rooms, Guests, Reservations).  
+This improves maintainability, testability, and readability.
 
-## Code of Conduct
+- **Controllers** handle only request/response logic.
+- **Services** contain business rules (reservation validation, availability checking, etc.).
+- **Repositories** encapsulate all database interactions.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+This pattern is common in enterprise Laravel applications and prevents fat controllers or duplicated logic.
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 2. Form Request Validation
 
-## License
+Each action (store, update, delete, view) has its own **Form Request** class, ensuring:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- Clean controllers
+- Consistent validation
+- Per-action authorization capability
+- Sanitized data before business logic runs
+
+---
+
+## 3. Blade-Based UI
+
+The UI is built with **Blade + Bootstrap**, intentionally simple for assessment and clarity.
+
+Each module has its own CRUD Blade view folder:
+
+- Hotels
+- Rooms
+- Guests
+- Reservations
+
+---
+
+## 4. Activity Logging Trait
+
+A reusable trait automatically logs:
+
+- The user performing the action
+- The model affected
+- Old and new payload values
+- Timestamp
+- Action type (created, updated, deleted)
+
+This provides transparency and supports debugging or auditing.
+
+---
+
+## 5. Queued Email Notification
+
+Reservation confirmation emails are sent using a queued job to avoid blocking the request.
+
+This demonstrates use of:
+
+- Laravel Jobs
+- Queue worker
+- Mailables
+- Scheduler (cron-ready design)
+
+---
+
+## 6. Preventing Double Booking
+
+The `ReservationService` includes conflict detection logic to prevent overlapping bookings.
+
+This ensures that:
+
+- Check-in and check-out dates do not collide
+- Only available rooms can be booked
+
+---
+
+## 7. Modular Routing
+
+Routes are distributed into separate files for better organization:
+
+- `routes/hotels.php`
+- `routes/rooms.php`
+- `routes/guests.php`
+- `routes/reservations.php`
+
+This scales better for large systems.
+
+---
+
+# Assumptions and Notes
+
+## Users and guests are separate concepts
+
+- **Users** authenticate and manage the system.
+- **Guests** represent hotel customers and do not log in.
+
+## A reservation cannot be edited once canceled
+
+Only the following actions are allowed afterward:
+
+- View
+- Cancel (once)
+- Delete
+
+## Room availability logic uses simple overlap checking
+
+Typical reservation constraints:
+
+- A reservation cannot overlap another on the same room.
+- Check-in/check-out ranges are validated strictly.
+
+## Simple UI chosen intentionally
+
+As this is a technical assessment, the emphasis is on:
+
+- Backend structure
+- Code quality
+- Clear separation of concerns  
+  Not on advanced frontend styling.
+
+## Email sending requires a running queue worker
+
+Without running:
+```bash
+php artisan queue:work
+```
+emails will remain in the pending jobs table.
+
+## Seeded data is for demonstration
+
+Seeders create:
+
+- Sample hotels
+- Sample rooms
+- Sample guests
+- One admin account
+
+This makes testing easier and ensures the system works immediately after installation.
+

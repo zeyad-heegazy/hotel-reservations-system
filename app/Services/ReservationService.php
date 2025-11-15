@@ -7,6 +7,7 @@ use App\Models\Reservation;
 use App\Repositories\ReservationRepository;
 use App\Repositories\RoomRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Validation\ValidationException;
 
 class ReservationService
 {
@@ -36,7 +37,11 @@ class ReservationService
             $data['check_out']
         );
 
-       abort_if(!$available, 404, 'Room is not available for these dates.');
+        if (!$available) {
+            throw ValidationException::withMessages([
+                'room_id' => 'Room is not available for these dates.',
+            ]);
+        }
 
         $room = $this->roomRepository->getById($data['room_id']);
 
